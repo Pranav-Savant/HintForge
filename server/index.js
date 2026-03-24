@@ -35,8 +35,8 @@ app.post("/analyze", optionalAuth, async (req, res) => {
     let prompt;
 
     if (cleanQuestion && cleanCode) {
-      prompt = `
-      You are an expert DSA mentor.
+  prompt = `
+You are an expert DSA mentor.
 
 Problem:
 ${cleanQuestion}
@@ -46,6 +46,17 @@ ${cleanCode}
 
 Evaluate the solution strictly.
 
+THINKING PHASE (MANDATORY - DO NOT SKIP):
+
+Before writing the final answer, you MUST internally:
+1. Determine what each output element depends on
+2. Decide whether dependency is LOCAL or GLOBAL
+3. List at least 2 possible approaches
+4. Reject incorrect approaches with proper reasoning
+5. Select only logically valid approaches
+
+DO NOT output this thinking.
+
 Solve the following DSA problem step by step:
 
 1. Restate the problem clearly
@@ -53,130 +64,30 @@ Solve the following DSA problem step by step:
 
 DEPENDENCY ANALYSIS (MANDATORY):
 
-- Clearly state what each output element depends on.
-- Determine whether the dependency is:
-  - Local (row/column/neighbors), OR
-  - Global (entire array/matrix)
-- Only use approaches that match this dependency.
-- If dependency is global, DO NOT use row-wise or column-wise shortcuts unless proven correct.
+- Each output element depends on: ______
+- Dependency type: (LOCAL / GLOBAL)
+
+- If dependency is GLOBAL:
+  - DO NOT use row-wise, column-wise, or diagonal shortcuts unless fully justified
 
 3. Start from brute force and improve logically
 4. Derive the optimal approach with justification
 5. Explain why other intuitive approaches fail
 6. Carefully handle constraints like modulo and division
-7. Dry run the solution on a small example to verify correctness
+7. Dry run with a small example
 8. Provide time and space complexity
-9. Give a confidence score (0–100%) and explain it
+9. Give confidence score
 
-IMPORTANT:
-- Use strictly valid JSON
-- Use double quotes only
-- No trailing commas
-- No markdown
-- No extra text
-- Tags must be relevant DSA topics (Array, DP, Graph, Greedy, etc.)
-- Difficulty must be one of: Easy, Medium, Hard
-- Do NOT assume patterns like prefix sum/product unless proven
-- Do NOT guess formulas
-- If unsure, say "I am not certain"
-- Prioritize correctness over sounding confident
+STRICT RULES:
+- Do NOT guess patterns
+- Do NOT use DP/prefix unless justified
+- Reject invalid approaches
 
-- Before using any known pattern (DP, prefix sum/product, greedy, etc.), you MUST justify why it applies to this problem.
-- If justification is missing, do NOT use that pattern.
-
-Before finalizing the solution, verify the following:
-
-1. If modulo is used:
-   - Check whether division is valid under this modulo
-   - If not, avoid division-based approaches
-
-2. If multiplication/product is involved:
-   - Consider overflow and modulo handling
-
-3. If the problem is multi-dimensional:
-   - Clearly explain how the approach extends to that dimension
-
-4. Check edge cases:
-   - Zero values
-   - Minimum/maximum constraints
-   - Duplicate values if relevant
-
-5. Validate the approach with a small example
-
-Self-Check:
-
-- Is any step using division under modulo? If yes, verify correctness.
-- Does the approach fail for edge cases like zero or duplicates?
-- Is the logic valid for all dimensions (1D/2D/etc)?
-- Test with a small example and confirm output.
-
-If confidence < 90%, re-evaluate the solution before answering.
-
-Do not introduce concepts that are not directly required by the problem unless you clearly justify why they are necessary.
-
-CONTENT QUALITY RULES:
-
-- Avoid one-line answers
-- Each explanation must be detailed (at least 4–6 lines)
-- Focus on intuition, not just the result
-- Clearly explain WHY the approach works
-- Clearly explain WHEN to use the approach
-- Use simple and clear language (like teaching a student)
-
-APPROACH RULES:
-
-- Always provide exactly 3 approaches:
-1. Brute Force
-2. Better
-3. Optimal
-
-- For each approach explanation, include:
-- Core idea
-- Intuition behind it
-- High-level steps (no code)
-
-HINT RULES:
-
-- Provide exactly 3 hints:
-- Hint 1: very small clue
-- Hint 2: moderate guidance
-- Hint 3: near-solution explanation (but no full solution)
-
-EVALUATION RULES (if code is provided):
-
-- Be honest and critical
-- Clearly state if the user is on the correct path
-- Mention what is good
-- Mention mistakes or inefficiencies
-- Mention missing edge cases
-- Suggest improvements
-
-TAGS & DIFFICULTY:
-
-- Tags must be relevant DSA topics (e.g., Array, Hashing, DP, Graph, Greedy, Sliding Window, etc.)
-- Provide 2–4 meaningful tags
-- Difficulty must be exactly one of: Easy, Medium, Hard
-
-GENERAL:
-
-- Do NOT hallucinate missing details
-- If context is unclear, say it clearly
-- Do NOT provide full code solutions
-- Focus on learning and problem-solving guidance
-
-FINAL VERIFICATION (MANDATORY):
-
-Before giving final answer, verify:
-
-1. Does the approach actually compute what the problem asks for?
-2. Try a small example and check if your logic produces the correct result.
-3. Check if any step introduces unrelated concepts (like diagonal, row/column separation when not required).
-4. If any inconsistency is found, FIX the approach before output.
-
-If verification fails, regenerate the solution.
+SANITY CHECK:
+- Verify with small example
+- Fix if incorrect
 
 Return ONLY JSON:
-
 {
   "tags": ["", ""],
   "difficulty": "",
@@ -213,161 +124,39 @@ Return ONLY JSON:
   ],
   "bestApproach": "",
   "hints": ["", "", ""]
-}`;
-            }
+}
+`;
+}
 
-            else if (cleanQuestion) {
-              prompt = `You are an expert DSA mentor.
+else if (cleanQuestion) {
+  prompt = `
+You are an expert DSA mentor.
 
 Problem:
 ${cleanQuestion}
 
-User Code:
-${cleanCode}
+THINKING PHASE (MANDATORY - DO NOT SKIP):
 
-Evaluate the solution strictly.
+Before writing the final answer, you MUST internally:
+1. Determine dependency (LOCAL / GLOBAL)
+2. Evaluate possible approaches
+3. Reject incorrect ones
 
-Solve the following DSA problem step by step:
+Solve the problem step by step with correct logic.
 
-1. Restate the problem clearly
-2. Identify constraints and important observations
+DEPENDENCY RULE:
+- If GLOBAL → no row/column tricks
 
-DEPENDENCY ANALYSIS (MANDATORY):
+STRICT RULE:
+- Do NOT invent approaches
 
-- Clearly state what each output element depends on.
-- Determine whether the dependency is:
-  - Local (row/column/neighbors), OR
-  - Global (entire array/matrix)
-- Only use approaches that match this dependency.
-- If dependency is global, DO NOT use row-wise or column-wise shortcuts unless proven correct.
-
-3. Start from brute force and improve logically
-4. Derive the optimal approach with justification
-5. Explain why other intuitive approaches fail
-6. Carefully handle constraints like modulo and division
-7. Dry run the solution on a small example to verify correctness
-8. Provide time and space complexity
-9. Give a confidence score (0–100%) and explain it
-
-IMPORTANT:
-- Use strictly valid JSON
-- Use double quotes only
-- No trailing commas
-- No markdown
-- No extra text
-- Tags must be relevant DSA topics (Array, DP, Graph, Greedy, etc.)
-- Difficulty must be one of: Easy, Medium, Hard
-- Do NOT assume patterns like prefix sum/product unless proven
-- Do NOT guess formulas
-- If unsure, say "I am not certain"
-- Prioritize correctness over sounding confident
-
-- Before using any known pattern (DP, prefix sum/product, greedy, etc.), you MUST justify why it applies to this problem.
-- If justification is missing, do NOT use that pattern.
-
-Before finalizing the solution, verify the following:
-
-1. If modulo is used:
-   - Check whether division is valid under this modulo
-   - If not, avoid division-based approaches
-
-2. If multiplication/product is involved:
-   - Consider overflow and modulo handling
-
-3. If the problem is multi-dimensional:
-   - Clearly explain how the approach extends to that dimension
-
-4. Check edge cases:
-   - Zero values
-   - Minimum/maximum constraints
-   - Duplicate values if relevant
-
-5. Validate the approach with a small example
-
-Self-Check:
-
-- Is any step using division under modulo? If yes, verify correctness.
-- Does the approach fail for edge cases like zero or duplicates?
-- Is the logic valid for all dimensions (1D/2D/etc)?
-- Test with a small example and confirm output.
-
-If confidence < 90%, re-evaluate the solution before answering.
-
-Do not introduce concepts that are not directly required by the problem unless you clearly justify why they are necessary.
-
-CONTENT QUALITY RULES:
-
-- Avoid one-line answers
-- Each explanation must be detailed (at least 4–6 lines)
-- Focus on intuition, not just the result
-- Clearly explain WHY the approach works
-- Clearly explain WHEN to use the approach
-- Use simple and clear language (like teaching a student)
-
-APPROACH RULES:
-
-- Always provide exactly 3 approaches:
-1. Brute Force
-2. Better
-3. Optimal
-
-- For each approach explanation, include:
-- Core idea
-- Intuition behind it
-- High-level steps (no code)
-
-HINT RULES:
-
-- Provide exactly 3 hints:
-- Hint 1: very small clue
-- Hint 2: moderate guidance
-- Hint 3: near-solution explanation (but no full solution)
-
-EVALUATION RULES (if code is provided):
-
-- Be honest and critical
-- Clearly state if the user is on the correct path
-- Mention what is good
-- Mention mistakes or inefficiencies
-- Mention missing edge cases
-- Suggest improvements
-
-TAGS & DIFFICULTY:
-
-- Tags must be relevant DSA topics (e.g., Array, Hashing, DP, Graph, Greedy, Sliding Window, etc.)
-- Provide 2–4 meaningful tags
-- Difficulty must be exactly one of: Easy, Medium, Hard
-
-GENERAL:
-
-- Do NOT hallucinate missing details
-- If context is unclear, say it clearly
-- Do NOT provide full code solutions
-- Focus on learning and problem-solving guidance
-
-FINAL VERIFICATION (MANDATORY):
-
-Before giving final answer, verify:
-
-1. Does the approach actually compute what the problem asks for?
-2. Try a small example and check if your logic produces the correct result.
-3. Check if any step introduces unrelated concepts (like diagonal, row/column separation when not required).
-4. If any inconsistency is found, FIX the approach before output.
-
-If verification fails, regenerate the solution.
+SANITY CHECK:
+- Verify with example
 
 Return ONLY JSON:
-
 {
   "tags": ["", ""],
   "difficulty": "",
-  "evaluation": {
-    "isCorrectDirection": true,
-    "whatIsGood": "",
-    "issues": "",
-    "missingEdgeCases": "",
-    "improvements": ""
-  },
   "complexity": {
     "time": "",
     "space": ""
@@ -394,11 +183,12 @@ Return ONLY JSON:
   ],
   "bestApproach": "",
   "hints": ["", "", ""]
-}`;
-    }
+}
+`;
+}
 
-    else {
-      prompt = `
+else {
+  prompt = `
 Analyze this code:
 
 ${cleanCode}
@@ -409,22 +199,9 @@ IMPORTANT:
 - No markdown
 - No trailing commas
 
-CONTENT QUALITY RULES:
-
-- Avoid one-line answers
-- Use simple and clear language (like teaching a student)
-
-EVALUATION RULES:
-
-- Be honest and critical
-- Clearly state if the user is on the correct path
-- Mention what is good
-- Mention mistakes or inefficiencies
-- Mention missing edge cases
-- Suggest improvements
+Be critical and accurate.
 
 Return ONLY JSON:
-
 {
   "evaluation": {
     "isCorrectDirection": true,
@@ -438,7 +215,7 @@ Return ONLY JSON:
   }
 }
 `;
-    }
+}
 
     const response = await groq.chat.completions.create({
       model: "llama-3.1-8b-instant",
