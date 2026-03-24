@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import { checkAuth } from "../services/api.js";
+import { checkAuth, logout } from "../services/api.js";
 
 function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -20,11 +19,7 @@ function Navbar() {
   }, []);
 
   const handleLogout = async () => {
-    await axios.post(
-      "http://localhost:4000/auth/logout",
-      {},
-      { withCredentials: true }
-    );
+    await logout();
     setIsLoggedIn(false);
     window.location.href = "/";
   };

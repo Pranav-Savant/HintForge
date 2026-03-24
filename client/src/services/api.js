@@ -9,5 +9,6 @@ export const getHistory = () => API.get("/api/history");
 export const login=(payload)=>API.post("/auth/login",payload);
 export const signup=(payload)=>API.post("/auth/signup",payload);
 export const checkAuth = () => API.get("/auth/isAuth");
+export const logout = () => API.post("/auth/logout");
 
 export default API;
